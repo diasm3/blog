@@ -3,13 +3,21 @@
 import React, { ReactNode } from "react"
 import styled from "styled-components"
 import { TableOfContents } from "@/components/PreviewPanel/TocPreview"
+import ClientFolderExplorer, { FolderItem } from "./FolderExpolorer"
 
 interface BlogPostLayoutProps {
   children: ReactNode
   title: string
   date: string
   content: string
+  folderStructure: FolderItem[]
 }
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
 
 // 블로그 포스트 레이아웃 스타일
 const LayoutContainer = styled.div`
@@ -31,6 +39,8 @@ const MainContent = styled.article`
 
 const Sidebar = styled.aside`
   position: sticky;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
   top: 2rem;
   height: calc(100vh - 4rem);
   overflow-y: auto;
@@ -61,18 +71,23 @@ export default function BlogPostLayout({
   title,
   date,
   content,
+  folderStructure,
 }: BlogPostLayoutProps) {
   return (
-    <LayoutContainer>
-      <MainContent>
-        <Title>{title}</Title>
-        <Date>{date}</Date>
-        {children}
-      </MainContent>
-      <Sidebar>
-        <h3>목차</h3>
-        <TableOfContents content={content} />
-      </Sidebar>
-    </LayoutContainer>
+    <Container>
+      <ClientFolderExplorer folderStructure={folderStructure} />
+
+      <LayoutContainer>
+        <MainContent>
+          <Title>{title}</Title>
+          <Date>{date}</Date>
+          {children}
+        </MainContent>
+        <Sidebar>
+          <h3>목차</h3>
+          <TableOfContents content={content} />
+        </Sidebar>
+      </LayoutContainer>
+    </Container>
   )
 }

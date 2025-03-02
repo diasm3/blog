@@ -48,54 +48,56 @@ interface MDXPage {
 }
 
 // 모든 폴더 및 파일 경로를 포함한 폴더 구조 가져오기
-export const getFolderStructure = (
+export const getFolderStructure = async (
   dir = CONTENT_PATH,
   basePath = ""
-): FolderItem[] => {
+): Promise<FolderItem[]> => {
   const items = fs.readdirSync(dir, { withFileTypes: true })
 
-  return items
-    .filter((item) => !item.name.startsWith(".")) // 숨김 파일 제외
-    .sort((a, b) => {
-      // 폴더를 파일보다 먼저 정렬
-      if (a.isDirectory() && !b.isDirectory()) return -1
-      if (!a.isDirectory() && b.isDirectory()) return 1
-      // 같은 타입끼리는 알파벳 순 정렬
-      return a.name.localeCompare(b.name)
-    })
-    .map((item) => {
-      const itemPath = path.join(dir, item.name)
-      const relativePath = path.join(basePath, item.name)
+  const processedItems = await Promise.all(
+    items
+      .filter((item) => !item.name.startsWith(".")) // 숨김 파일 제외
+      .sort((a, b) => {
+        // 폴더를 파일보다 먼저 정렬
+        if (a.isDirectory() && !b.isDirectory()) return -1
+        if (!a.isDirectory() && b.isDirectory()) return 1
+        // 같은 타입끼리는 알파벳 순 정렬
+        return a.name.localeCompare(b.name)
+      })
+      .map(async (item) => {
+        const itemPath = path.join(dir, item.name)
+        const relativePath = path.join(basePath, item.name)
 
-      if (item.isDirectory()) {
-        return {
-          id: relativePath,
-          name: item.name,
-          type: "folder" as const,
-          path: `/${relativePath}`,
-          children: getFolderStructure(itemPath, relativePath),
+        if (item.isDirectory()) {
+          return {
+            id: relativePath,
+            name: item.name,
+            type: "folder" as const,
+            path: `/${relativePath}`,
+            children: await getFolderStructure(itemPath, relativePath),
+          }
         }
-      }
 
-      // MDX 또는 MD 파일만 포함
-      if (item.name.endsWith(".mdx") || item.name.endsWith(".md")) {
-        const filePath = relativePath.replace(/\.(mdx|md)$/, "")
-        // 위키 파일인지 블로그 파일인지 확인하여 적절한 경로 반환
-        const linkPath = relativePath.startsWith("blog")
-          ? `/blog/${path.basename(filePath)}`
-          : `/wiki/${filePath.replace(/^wiki\//, "")}`
+        // MDX 또는 MD 파일만 포함
+        if (item.name.endsWith(".mdx") || item.name.endsWith(".md")) {
+          const filePath = relativePath.replace(/\.(mdx|md)$/, "")
+          // 위키 파일인지 블로그 파일인지 확인하여 적절한 경로 반환
+          const linkPath = relativePath.startsWith("blog")
+            ? `/blog/${path.basename(filePath)}`
+            : `/wiki/${filePath.replace(/^wiki\//, "")}`
 
-        return {
-          id: relativePath,
-          name: item.name.replace(/\.(mdx|md)$/, ""),
-          type: "file" as const,
-          path: linkPath,
+          return {
+            id: relativePath,
+            name: item.name.replace(/\.(mdx|md)$/, ""),
+            type: "file" as const,
+            path: linkPath,
+          }
         }
-      }
 
-      return null
-    })
-    .filter(Boolean as any) as FolderItem[]
+        return null
+      })
+  )
+  return processedItems.filter(Boolean as any) as FolderItem[]
 }
 
 // Markdown 콘텐츠에서 헤딩 추출하여 TOC 생성
@@ -291,32 +293,3 @@ export const remarkVimwikiLinks: Plugin = () => {
     })
   }
 }
-
-// 특정 위키 페이지의 역링크(해당 페이지를 참조하는 다른 페이지들) 찾기
-// async const findBacklinks = async (slug: string): Promise<Array<{ slug: string; title: string; }>> => {
-//   // 모든 위키 페이지 슬러그 가져오기
-//   const allSlugs = await getAllWikiSlugs();
-//   const backlinks = [];
-
-//   // 간단한 링크 패턴 - 실제 구현에서는 더 정교한 방법 필요
-//   const linkPattern = new RegExp(`\\[\\[([^|\\]]+)(\\|[^\\]]+)?\\]\\]`, 'g');
-
-//   // 각 페이지마다 slug를 링크하는지 확인
-//   for (const pageSlug of allSlugs) {
-//     if (pageSlug === slug) continue; // 자기 자신은 제외
-
-//     try {
-//       const filePath = getWikiFilePath(pageSlug);
-//       const content = fs.readFileSync(filePath, 'utf8');
-//       const { data } = matter(content);
-
-//       let match;
-//       let found = false;
-
-//       // 페이지 내용에서 링크 찾기
-//       while ((match = linkPattern.exec(content)) !== null) {
-//         const linkTarget = match[1].trim();
-//         const normalizedLinkTarget = linkTarget.toLowerCase().replace(/\s+/g, '-');
-
-//         // 링크 대상이 현재 slug인지 확인
-//         if (normalizedLinkTarget === slug || normalizedLinkTarget === slug.split('/').pop()) {===== vimwiki 스타일 MDX 블로그 설정 스크립트 (App Router) =====${NC}"

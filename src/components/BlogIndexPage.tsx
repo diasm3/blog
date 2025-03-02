@@ -1,8 +1,8 @@
 "use client"
-
-import React, { useEffect } from "react"
+import React from "react"
 import Link from "next/link"
 import styled from "styled-components"
+import ClientFolderExplorer, { FolderItem } from "./layout/FolderExpolorer"
 
 interface BlogIndexPageProps {
   posts: Array<{
@@ -24,6 +24,55 @@ interface BlogIndexPageProps {
       level: number
     }>
   }>
+  folderStructure: FolderItem[]
+}
+
+export default function BlogIndexPage({
+  posts,
+  folderStructure,
+}: BlogIndexPageProps) {
+  return (
+    <Container>
+      <ClientFolderExplorer folderStructure={folderStructure} />
+      <Title>블로그 포스트</Title>
+
+      <PostGrid>
+        {posts.map((post) => (
+          <PostCard key={post.slug}>
+            <PostContent>
+              <PostTitle>
+                <Link href={`/blog/${post.slug}`}>
+                  {post.frontMatter.title}
+                </Link>
+              </PostTitle>
+
+              {post.frontMatter.date && (
+                <PostDate>
+                  {new Date(post.frontMatter.date).toLocaleDateString("ko-KR", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </PostDate>
+              )}
+
+              {post.frontMatter.excerpt && (
+                <PostExcerpt>{post.frontMatter.excerpt}</PostExcerpt>
+              )}
+
+              {post.frontMatter.tags && post.frontMatter.tags.length > 0 && (
+                <TagList>
+                  {post.frontMatter.tags.map((tag) => (
+                    <Tag key={tag}>{tag}</Tag>
+                  ))}
+                </TagList>
+              )}
+            </PostContent>
+          </PostCard>
+        ))}
+      </PostGrid>
+    </Container>
+  )
 }
 
 const Container = styled.div`
@@ -99,47 +148,3 @@ const Tag = styled.span`
   background-color: ${(props) => props.theme.colors.background.light};
   color: ${(props) => props.theme.colors.text.secondary};
 `
-
-export default function BlogIndexPage({ posts }: BlogIndexPageProps) {
-  return (
-    <Container>
-      <Title>블로그 포스트</Title>
-
-      <PostGrid>
-        {posts.map((post) => (
-          <PostCard key={post.slug}>
-            <PostContent>
-              <PostTitle>
-                <Link href={`/blog/${post.slug}`}>
-                  {post.frontMatter.title}
-                </Link>
-              </PostTitle>
-
-              {post.frontMatter.date && (
-                <PostDate>
-                  {new Date(post.frontMatter.date).toLocaleDateString("ko-KR", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </PostDate>
-              )}
-
-              {post.frontMatter.excerpt && (
-                <PostExcerpt>{post.frontMatter.excerpt}</PostExcerpt>
-              )}
-
-              {post.frontMatter.tags && post.frontMatter.tags.length > 0 && (
-                <TagList>
-                  {post.frontMatter.tags.map((tag) => (
-                    <Tag key={tag}>{tag}</Tag>
-                  ))}
-                </TagList>
-              )}
-            </PostContent>
-          </PostCard>
-        ))}
-      </PostGrid>
-    </Container>
-  )
-}

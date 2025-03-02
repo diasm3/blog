@@ -6,10 +6,8 @@ import Image from "next/image"
 import { useTheme } from "styled-components"
 import * as MDXTheme from "@/components/layout/mdx_theme"
 
-// MDX 컴포넌트를 위한 컨텍스트 생성
 const MDXComponentsContext = createContext<MDXComponents>({})
 
-// MDX 컴포넌트를 사용하기 위한 훅
 export function useMDXComponents(
   components: MDXComponents = {}
 ): MDXComponents {
@@ -21,9 +19,7 @@ interface MDXContentProps {
   children: ReactNode
 }
 
-// 스타일이 적용된 MDX 컴포넌트 생성
 const createStyledMDXComponents = (): MDXComponents => {
-  // 헤딩 컴포넌트
   const H1 = MDXTheme.CreateHeading(1)
   const H2 = MDXTheme.CreateHeading(2)
   const H3 = MDXTheme.CreateHeading(3)
@@ -68,13 +64,10 @@ const createStyledMDXComponents = (): MDXComponents => {
 }
 
 export default function MDXContent({ children }: MDXContentProps) {
-  // 이 컴포넌트는 클라이언트 컴포넌트이므로 안전하게 useTheme 훅을 사용할 수 있습니다
-  useTheme() // 테마 컨텍스트 활성화
+  useTheme()
 
-  // 스타일이 적용된 MDX 컴포넌트 생성
   const styledComponents = createStyledMDXComponents()
 
-  // MDX 콘텐츠에 스타일이 적용된 컴포넌트 제공
   return (
     <MDXComponentsContext.Provider value={styledComponents}>
       <div className="mdx-content" style={{ maxWidth: "100%" }}>
