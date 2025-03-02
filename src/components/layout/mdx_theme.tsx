@@ -1,5 +1,6 @@
 "use client"
 import styled from "styled-components"
+import Link from "next/link"
 
 // ✅ 코드 블록 스타일 (다크모드 지원)
 export const CodeBlock = styled.pre`

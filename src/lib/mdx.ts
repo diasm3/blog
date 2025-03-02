@@ -174,10 +174,10 @@ export const getPostBySlug = async (slug: string): Promise<MDXPage> => {
   // MDX 처리
   const mdxSource = await serialize(content, {
     mdxOptions: {
-      remarkPlugins: [remarkGfm, remarkVimwikiLinks],
+      remarkPlugins: [remarkGfm],
       rehypePlugins: [
         rehypeSlug,
-        [rehypeAutolinkHeadings, { behavior: "wrap" }],
+        // [rehypeAutolinkHeadings, { behavior: "wrap" }],
         rehypeAutolinkHeadings,
       ],
     },

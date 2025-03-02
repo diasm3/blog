@@ -1,0 +1,45 @@
+/* MDX 스타일 - 호버 효과 등 */
+
+/* 헤딩 호버 시 앵커 표시 */
+.heading-anchor {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+h1:hover .heading-anchor,
+h2:hover .heading-anchor,
+h3:hover .heading-anchor,
+h4:hover .heading-anchor,
+h5:hover .heading-anchor,
+h6:hover .heading-anchor {
+  opacity: 1;
+}
+
+/* 위키 링크 호버 효과 */
+a[href^="/wiki/"] {
+  transition: background-color 0.2s ease-in-out;
+}
+
+a[href^="/wiki/"]:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+  pre, code {
+    background-color: #1F2937 !important;
+    color: #F9FAFB !important;
+  }
+  
+  th {
+    background-color: #374151 !important;
+  }
+  
+  a.heading-anchor {
+    color: #60A5FA !important;
+  }
+  
+  blockquote {
+    border-left-color: #60A5FA !important;
+  }
+}
