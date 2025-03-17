@@ -1,10 +1,13 @@
-import type { Metadata } from 'next'
-import StyledComponentsRegistry from '../lib/registry'
-import { ThemeProviderWrapper } from '../components/ThemeProviderWrapper'
+import type { Metadata } from "next"
+import StyledComponentsRegistry from "../lib/registry"
+import { ThemeProviderWrapper } from "../components/ThemeProviderWrapper"
+import RootLayoutWrapper from "@/components/layout/RootLayoutWrapper"
+import "@/styles/highlight.css"
+import "@/styles/rehype-pretty-code.css"
 
 export const metadata: Metadata = {
-  title: 'vimwiki 스타일 MDX 블로그',
-  description: 'vimwiki 스타일 링크와 MDX를 결합한 개인 지식 관리 시스템',
+  title: "vimwiki 스타일 MDX 블로그",
+  description: "vimwiki 스타일 링크와 MDX를 결합한 개인 지식 관리 시스템",
 }
 
 export default function RootLayout({
@@ -17,7 +20,7 @@ export default function RootLayout({
       <body>
         <StyledComponentsRegistry>
           <ThemeProviderWrapper>
-            {children}
+            <RootLayoutWrapper>{children}</RootLayoutWrapper>
           </ThemeProviderWrapper>
         </StyledComponentsRegistry>
       </body>

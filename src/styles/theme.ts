@@ -128,8 +128,8 @@ export const lightTheme: DefaultTheme = {
       overlay: "rgba(0, 0, 0, 0.5)",
     },
     text: {
-      primary: "#1F2937",
-      secondary: "#4B5563",
+      primary: "#111827", // Darker text for better contrast
+      secondary: "#374151", // Darker secondary text
       disabled: "#9CA3AF",
       hint: "#D1D5DB",
     },
@@ -245,6 +245,71 @@ export const darkTheme: DefaultTheme = {
 }
 
 export const GlobalStyle = createGlobalStyle<{ $isDarkMode: boolean }>`
+  :root {
+    /* 색상 변수 - 라이트 테마 */
+    --color-primary-main: ${lightTheme.colors.primary.main};
+    --color-primary-light: ${lightTheme.colors.primary.light};
+    --color-primary-dark: ${lightTheme.colors.primary.dark};
+    --color-primary-contrast-text: ${lightTheme.colors.primary.contrastText};
+    --color-primary-main-rgb: 59, 130, 246; /* #3B82F6 */
+    
+    --color-background-default: ${lightTheme.colors.background.default};
+    --color-background-paper: ${lightTheme.colors.background.paper};
+    --color-background-contrast: ${lightTheme.colors.background.contrast};
+    --color-background-light: ${lightTheme.colors.background.light};
+    --color-background-dark: ${lightTheme.colors.background.dark};
+    
+    --color-text-primary: ${lightTheme.colors.text.primary};
+    --color-text-secondary: ${lightTheme.colors.text.secondary};
+    --color-text-disabled: ${lightTheme.colors.text.disabled};
+    
+    --color-divider: ${lightTheme.colors.divider};
+    --color-border: ${lightTheme.colors.border};
+    
+    /* 타이포그래피 변수 */
+    --font-family-sans: ${lightTheme.typography.fontFamily.sans};
+    --font-family-mono: ${lightTheme.typography.fontFamily.mono};
+    
+    /* 그림자 변수 */
+    --shadow-sm: ${lightTheme.shadows.sm};
+    --shadow-md: ${lightTheme.shadows.md};
+    --shadow-lg: ${lightTheme.shadows.lg};
+    
+    /* 레이아웃 변수 */
+    --border-radius-small: ${lightTheme.borderRadius.small};
+    --border-radius-medium: ${lightTheme.borderRadius.medium};
+    --border-radius-large: ${lightTheme.borderRadius.large};
+    
+    /* 레이아웃 크기 */
+    --layout-max-width: ${lightTheme.layout.maxWidth};
+    --layout-header-height: ${lightTheme.layout.headerHeight};
+    --layout-sidebar-width: ${lightTheme.layout.sidebarWidth};
+    --layout-right-panel-width: ${lightTheme.layout.rightPanelWidth};
+    --layout-content-padding: ${lightTheme.layout.contentPadding};
+  }
+  
+  html.dark {
+    /* 색상 변수 - 다크 테마 */
+    --color-primary-main: ${darkTheme.colors.primary.main};
+    --color-primary-light: ${darkTheme.colors.primary.light};
+    --color-primary-dark: ${darkTheme.colors.primary.dark};
+    --color-primary-contrast-text: ${darkTheme.colors.primary.contrastText};
+    --color-primary-main-rgb: 96, 165, 250; /* #60A5FA */
+    
+    --color-background-default: ${darkTheme.colors.background.default};
+    --color-background-paper: ${darkTheme.colors.background.paper};
+    --color-background-contrast: ${darkTheme.colors.background.contrast};
+    --color-background-light: ${darkTheme.colors.background.light};
+    --color-background-dark: ${darkTheme.colors.background.dark};
+    
+    --color-text-primary: ${darkTheme.colors.text.primary};
+    --color-text-secondary: ${darkTheme.colors.text.secondary};
+    --color-text-disabled: ${darkTheme.colors.text.disabled};
+    
+    --color-divider: ${darkTheme.colors.divider};
+    --color-border: ${darkTheme.colors.border};
+  }
+
   html, body {
     margin: 0;
     padding: 0;
@@ -255,22 +320,11 @@ export const GlobalStyle = createGlobalStyle<{ $isDarkMode: boolean }>`
   }
 
   body {
-    font-family: ${lightTheme.typography.fontFamily.sans};
+    font-family: var(--font-family-sans);
     line-height: ${lightTheme.typography.lineHeight.normal};
-    color: ${(props) =>
-      props.$isDarkMode
-        ? darkTheme.colors.text.primary
-        : lightTheme.colors.text.primary};
-    background-color: ${(props) =>
-      props.$isDarkMode
-        ? darkTheme.colors.background.default
-        : lightTheme.colors.background.default};
+    color: var(--color-text-primary);
+    background-color: var(--color-background-default);
     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-  }
-
-  html.dark body {
-    color: ${darkTheme.colors.text.primary};
-    background-color: ${darkTheme.colors.background.default};
   }
 
   /* 스크롤바 스타일링 */
@@ -278,8 +332,8 @@ export const GlobalStyle = createGlobalStyle<{ $isDarkMode: boolean }>`
     scrollbar-width: thin;
     scrollbar-color: ${(props) =>
       props.$isDarkMode
-        ? `${props.theme.colors.grey[600]} ${props.theme.colors.background.dark}`
-        : `${props.theme.colors.grey[300]} ${props.theme.colors.background.light}`};
+        ? `${props.theme.colors.grey[600]} var(--color-background-dark)`
+        : `${props.theme.colors.grey[300]} var(--color-background-light)`};
   }
 
   *::-webkit-scrollbar {
@@ -288,10 +342,7 @@ export const GlobalStyle = createGlobalStyle<{ $isDarkMode: boolean }>`
   }
 
   *::-webkit-scrollbar-track {
-    background: ${(props) =>
-      props.$isDarkMode
-        ? props.theme.colors.background.dark
-        : props.theme.colors.background.light};
+    background: var(--color-background-light);
   }
 
   *::-webkit-scrollbar-thumb {
@@ -311,10 +362,7 @@ export const GlobalStyle = createGlobalStyle<{ $isDarkMode: boolean }>`
   }
 
   a {
-    color: ${(props) =>
-      props.$isDarkMode
-        ? darkTheme.colors.primary.main
-        : lightTheme.colors.primary.main};
+    color: var(--color-primary-main);
     text-decoration: none;
     &:hover {
       text-decoration: underline;
@@ -326,14 +374,8 @@ export const GlobalStyle = createGlobalStyle<{ $isDarkMode: boolean }>`
   }
 
   ::selection {
-    background-color: ${(props) =>
-      props.$isDarkMode
-        ? darkTheme.colors.primary.main
-        : lightTheme.colors.primary.main};
-    color: ${(props) =>
-      props.$isDarkMode
-        ? darkTheme.colors.primary.contrastText
-        : lightTheme.colors.primary.contrastText};
+    background-color: var(--color-primary-main);
+    color: var(--color-primary-contrast-text);
   }
   
   @keyframes fadeIn {

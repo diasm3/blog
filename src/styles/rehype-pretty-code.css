@@ -1,0 +1,68 @@
+/* rehype-pretty-code 스타일 */
+pre {
+  overflow-x: auto;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+pre > code {
+  display: grid;
+  font-family: var(--font-family-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  counter-reset: line;
+  tab-size: 2;
+}
+
+/* 코드 블록 내 줄 스타일 */
+.line {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  border-left: 2px solid transparent;
+  min-height: 1.5rem;
+}
+
+/* 강조된 줄 스타일 */
+.line.highlighted {
+  background-color: rgba(200, 200, 255, 0.1);
+  border-left: 2px solid #60a5fa;
+}
+
+/* 강조된 단어 스타일 */
+.word.highlighted {
+  background-color: rgba(200, 200, 255, 0.15);
+  padding: 0.2em 0.1em;
+  border-radius: 0.25em;
+  box-shadow: 0 0 0 1px rgba(200, 200, 255, 0.2);
+}
+
+/* 코드 블록 언어 표시 */
+[data-language] {
+  position: relative;
+}
+
+[data-language]::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+/* 다크 모드 조정 */
+.dark pre {
+  background-color: #1e293b;
+}
+
+.dark .line.highlighted {
+  background-color: rgba(200, 200, 255, 0.05);
+}
+
+.dark .word.highlighted {
+  background-color: rgba(200, 200, 255, 0.1);
+}

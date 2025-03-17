@@ -21,7 +21,45 @@ MDXRemote 테스트
 
 ---
 
-```css
-console.log("MDX 코드 블록 테스트")
-const name: string = "홍길동"
+```typescript
+const WikiLink = ({ href, children }: WikiLinkProps) => {
+  const isWikiLink = href?.startsWith("/wiki/")
+  const isExternalLink = href?.startsWith("http")
+
+  if (isWikiLink) {
+    return (
+      <Link
+        href={href}
+        style={{
+          color: "var(--color-primary-main)",
+          borderBottom: "1px dotted var(--color-primary-main)",
+          transition: "all 0.2s ease-in-out",
+        }}
+      >
+        {children}
+      </Link>
+    )
+  }
+
+  if (isExternalLink) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          color: "var(--color-primary-main)",
+        }}
+      >
+        {children}
+      </a>
+    )
+  }
+
+  return (
+    <Link href={href} style={{ color: "var(--color-primary-main)" }}>
+      {children}
+    </Link>
+  )
+}
 ```

@@ -4,7 +4,7 @@ import type { MDXComponents } from "mdx/types"
 import Image, { ImageProps } from "next/image"
 import Link from "next/link"
 import { JSX, ReactNode } from "react"
-import { useTheme } from "styled-components"
+// No longer using SyntaxHighlighter directly, using CSS classes instead
 
 // MDX 컴포넌트 타입 정의
 type HeadingProps = {
@@ -35,10 +35,59 @@ const CodeBlock = ({
   className?: string
   children: ReactNode
 }) => {
-  const theme = useTheme()
   const match = /language-(\w+)/.exec(className || "")
   const language = match ? match[1] : ""
 
+  // 언어가 지정되어 있고 문자열 형태의 코드인 경우에만 하이라이팅 클래스 적용
+  if (language && typeof children === "string") {
+    return (
+      <div
+        style={{
+          position: "relative",
+          marginTop: "1.5rem",
+          marginBottom: "1.5rem",
+        }}
+      >
+        {language && (
+          <div
+            style={{
+              position: "absolute",
+              right: "1rem",
+              top: "0.5rem",
+              fontSize: "0.75rem",
+              color: "var(--color-text-secondary)",
+              zIndex: 10,
+            }}
+          >
+            {language}
+          </div>
+        )}
+        <pre
+          className={`hljs ${className}`}
+          style={{
+            borderRadius: "var(--border-radius-medium)",
+            padding: "1rem",
+            overflow: "auto",
+            backgroundColor: "var(--color-background-paper)",
+            boxShadow: "var(--shadow-sm)",
+            margin: 0,
+          }}
+        >
+          <code
+            className={`language-${language}`}
+            style={{
+              fontFamily: "var(--font-family-mono)",
+              fontSize: "0.875rem",
+            }}
+          >
+            {children}
+          </code>
+        </pre>
+      </div>
+    )
+  }
+
+  // 기본 코드 블록 (언어가 지정되지 않았거나 문자열이 아닌 경우)
   return (
     <div
       style={{
@@ -53,8 +102,8 @@ const CodeBlock = ({
             position: "absolute",
             right: "1rem",
             top: "0.5rem",
-            fontSize: theme.typography.fontSize.xs,
-            color: theme.colors.text.secondary,
+            fontSize: "0.75rem",
+            color: "var(--color-text-secondary)",
           }}
         >
           {language}
@@ -63,13 +112,13 @@ const CodeBlock = ({
       <pre
         className={className}
         style={{
-          borderRadius: theme.borderRadius.medium,
+          borderRadius: "var(--border-radius-medium)",
           padding: "1rem",
           overflow: "auto",
-          backgroundColor: theme.colors.background.dark,
-          color: theme.colors.text.primary,
-          fontFamily: theme.typography.fontFamily.mono,
-          boxShadow: theme.shadows.sm,
+          backgroundColor: "var(--color-background-paper)",
+          color: "var(--color-text-primary)",
+          fontFamily: "var(--font-family-mono)",
+          boxShadow: "var(--shadow-sm)",
         }}
         {...props}
       >
@@ -81,7 +130,6 @@ const CodeBlock = ({
 
 // ✅ 위키 스타일 링크 (외부 링크 & 내부 링크 구분)
 const WikiLink = ({ href, children }: WikiLinkProps) => {
-  const theme = useTheme()
   const isWikiLink = href?.startsWith("/wiki/")
   const isExternalLink = href?.startsWith("http")
 
@@ -90,9 +138,9 @@ const WikiLink = ({ href, children }: WikiLinkProps) => {
       <Link
         href={href}
         style={{
-          color: theme.colors.primary.main,
-          borderBottom: `1px dotted ${theme.colors.primary.main}`,
-          transition: theme.transitions.default,
+          color: "var(--color-primary-main)",
+          borderBottom: "1px dotted var(--color-primary-main)",
+          transition: "all 0.2s ease-in-out",
         }}
       >
         {children}
@@ -107,7 +155,7 @@ const WikiLink = ({ href, children }: WikiLinkProps) => {
         target="_blank"
         rel="noopener noreferrer"
         style={{
-          color: theme.colors.primary.main,
+          color: "var(--color-primary-main)",
         }}
       >
         {children}
@@ -116,7 +164,7 @@ const WikiLink = ({ href, children }: WikiLinkProps) => {
   }
 
   return (
-    <Link href={href} style={{ color: theme.colors.primary.main }}>
+    <Link href={href} style={{ color: "var(--color-primary-main)" }}>
       {children}
     </Link>
   )
@@ -129,23 +177,22 @@ const Heading = ({
   id,
   ...props
 }: HeadingProps & { level: 1 | 2 | 3 | 4 | 5 | 6 }) => {
-  const theme = useTheme()
   const Tag = `h${level}` as keyof JSX.IntrinsicElements
 
   // 폰트 크기 결정
   let fontSize
   switch (level) {
     case 1:
-      fontSize = theme.typography.fontSize["4xl"]
+      fontSize = "2.25rem"
       break
     case 2:
-      fontSize = theme.typography.fontSize["3xl"]
+      fontSize = "1.875rem"
       break
     case 3:
-      fontSize = theme.typography.fontSize["2xl"]
+      fontSize = "1.5rem"
       break
     default:
-      fontSize = theme.typography.fontSize.xl
+      fontSize = "1.25rem"
   }
 
   return (
@@ -154,8 +201,8 @@ const Heading = ({
       style={{
         position: "relative",
         scrollMarginTop: "5rem",
-        fontWeight: theme.typography.fontWeight.bold,
-        color: theme.colors.text.primary,
+        fontWeight: 700,
+        color: "var(--color-text-primary)",
         marginTop: level === 1 ? "2rem" : "1.5rem",
         marginBottom: level === 1 ? "1rem" : "0.75rem",
         fontSize,
@@ -170,7 +217,7 @@ const Heading = ({
             left: "-1rem",
             // 정적 스타일에서는 호버 상태를 직접 지정할 수 없으므로 기본값으로 설정
             opacity: 0,
-            color: theme.colors.primary.main,
+            color: "var(--color-primary-main)",
             textDecoration: "none",
           }}
           className="heading-anchor"
@@ -186,7 +233,6 @@ const Heading = ({
 
 // ✅ 체크박스 리스트 아이템 (Task List)
 const TaskListItem = ({ checked, children, ...props }: TaskListItemProps) => {
-  const theme = useTheme()
   return (
     <li
       style={{
@@ -203,7 +249,7 @@ const TaskListItem = ({ checked, children, ...props }: TaskListItemProps) => {
         style={{
           marginTop: "0.25rem",
           marginRight: "0.5rem",
-          accentColor: theme.colors.primary.main,
+          accentColor: "var(--color-primary-main)",
         }}
       />
       <span {...props}>{children}</span>
@@ -231,14 +277,13 @@ const H5 = (props: HeadingProps) => <Heading level={5} {...props} />
 const H6 = (props: HeadingProps) => <Heading level={6} {...props} />
 
 const Paragraph = (props: { children: ReactNode }) => {
-  const theme = useTheme()
   return (
     <p
       style={{
         marginTop: "1rem",
         marginBottom: "1rem",
-        lineHeight: theme.typography.lineHeight.relaxed,
-        color: theme.colors.text.primary,
+        lineHeight: "1.625",
+        color: "var(--color-text-primary)",
       }}
       {...props}
     />
@@ -246,7 +291,6 @@ const Paragraph = (props: { children: ReactNode }) => {
 }
 
 const UnorderedList = (props: { children: ReactNode }) => {
-  const theme = useTheme()
   return (
     <ul
       style={{
@@ -254,7 +298,7 @@ const UnorderedList = (props: { children: ReactNode }) => {
         paddingLeft: "1.5rem",
         marginTop: "1rem",
         marginBottom: "1rem",
-        color: theme.colors.text.primary,
+        color: "var(--color-text-primary)",
       }}
       {...props}
     />
@@ -262,7 +306,6 @@ const UnorderedList = (props: { children: ReactNode }) => {
 }
 
 const OrderedList = (props: { children: ReactNode }) => {
-  const theme = useTheme()
   return (
     <ol
       style={{
@@ -270,7 +313,7 @@ const OrderedList = (props: { children: ReactNode }) => {
         paddingLeft: "1.5rem",
         marginTop: "1rem",
         marginBottom: "1rem",
-        color: theme.colors.text.primary,
+        color: "var(--color-text-primary)",
       }}
       {...props}
     />
@@ -278,7 +321,6 @@ const OrderedList = (props: { children: ReactNode }) => {
 }
 
 const ListItem = (props: { className?: string; children: ReactNode }) => {
-  const theme = useTheme()
   if (props.className?.includes("task-list-item")) {
     return <TaskListItem {...props} />
   }
@@ -287,7 +329,7 @@ const ListItem = (props: { className?: string; children: ReactNode }) => {
       style={{
         marginTop: "0.25rem",
         marginBottom: "0.25rem",
-        color: theme.colors.text.primary,
+        color: "var(--color-text-primary)",
       }}
       {...props}
     />
@@ -295,18 +337,17 @@ const ListItem = (props: { className?: string; children: ReactNode }) => {
 }
 
 const Blockquote = (props: { children: ReactNode }) => {
-  const theme = useTheme()
   return (
     <blockquote
       style={{
         borderLeftWidth: "4px",
         borderLeftStyle: "solid",
-        borderLeftColor: theme.colors.primary.light,
+        borderLeftColor: "var(--color-primary-light)",
         paddingLeft: "1rem",
         fontStyle: "italic",
         marginTop: "1.5rem",
         marginBottom: "1.5rem",
-        color: theme.colors.text.secondary,
+        color: "var(--color-text-secondary)",
       }}
       {...props}
     />
@@ -314,14 +355,13 @@ const Blockquote = (props: { children: ReactNode }) => {
 }
 
 const Table = (props: { children: ReactNode }) => {
-  const theme = useTheme()
   return (
     <TableWrapper>
       <table
         style={{
           minWidth: "100%",
           borderCollapse: "collapse",
-          border: `1px solid ${theme.colors.divider}`,
+          border: "1px solid var(--color-divider)",
         }}
         {...props}
       />
@@ -330,15 +370,14 @@ const Table = (props: { children: ReactNode }) => {
 }
 
 const TableHead = (props: { children: ReactNode }) => {
-  const theme = useTheme()
   return (
     <th
       style={{
-        border: `1px solid ${theme.colors.divider}`,
+        border: "1px solid var(--color-divider)",
         padding: "0.5rem 1rem",
-        backgroundColor: theme.colors.background.light,
-        fontWeight: theme.typography.fontWeight.semibold,
-        color: theme.colors.text.primary,
+        backgroundColor: "var(--color-background-light)",
+        fontWeight: 600,
+        color: "var(--color-text-primary)",
       }}
       {...props}
     />
@@ -346,13 +385,12 @@ const TableHead = (props: { children: ReactNode }) => {
 }
 
 const TableCell = (props: { children: ReactNode }) => {
-  const theme = useTheme()
   return (
     <td
       style={{
-        border: `1px solid ${theme.colors.divider}`,
+        border: "1px solid var(--color-divider)",
         padding: "0.5rem 1rem",
-        color: theme.colors.text.primary,
+        color: "var(--color-text-primary)",
       }}
       {...props}
     />
@@ -360,25 +398,25 @@ const TableCell = (props: { children: ReactNode }) => {
 }
 
 const MDXImage = (props: ImageProps) => {
-  const theme = useTheme()
   return (
     <Image
+      layout="responsive"
       sizes="100vw"
       style={{
         width: "100%",
         height: "auto",
-        borderRadius: theme.borderRadius.medium,
+        borderRadius: "var(--border-radius-medium)",
         marginTop: "1.5rem",
         marginBottom: "1.5rem",
-        boxShadow: theme.shadows.md,
+        boxShadow: "var(--shadow-md)",
       }}
       {...props}
+      alt={props.alt as string}
     />
   )
 }
 
 const InlineCode = (props: { className?: string; children: ReactNode }) => {
-  const theme = useTheme()
   const { className } = props
   if (className?.includes("language-")) {
     return <CodeBlock {...props} />
@@ -386,10 +424,11 @@ const InlineCode = (props: { className?: string; children: ReactNode }) => {
   return (
     <code
       style={{
-        backgroundColor: `rgba(229, 231, 235, 0.5)`,
+        backgroundColor: "var(--color-background-light)",
+        color: "var(--color-text-primary)",
         padding: "0.125rem 0.375rem",
-        borderRadius: theme.borderRadius.small,
-        fontFamily: theme.typography.fontFamily.mono,
+        borderRadius: "var(--border-radius-small)",
+        fontFamily: "var(--font-family-mono)",
         fontSize: "0.875em",
       }}
       {...props}

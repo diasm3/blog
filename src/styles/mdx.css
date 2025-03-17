@@ -24,22 +24,27 @@ a[href^="/wiki/"]:hover {
   background-color: rgba(59, 130, 246, 0.1);
 }
 
-/* 다크 모드 지원 */
-@media (prefers-color-scheme: dark) {
-  pre, code {
-    background-color: #1F2937 !important;
-    color: #F9FAFB !important;
-  }
-  
-  th {
-    background-color: #374151 !important;
-  }
-  
-  a.heading-anchor {
-    color: #60A5FA !important;
-  }
-  
-  blockquote {
-    border-left-color: #60A5FA !important;
-  }
+/* 다크 모드 지원 - HTML 클래스 기반 */
+html.dark pre,
+html.dark code {
+  background-color: var(--color-background-paper);
+  color: var(--color-text-primary);
+}
+
+html.dark th {
+  background-color: var(--color-background-light);
+}
+
+html.dark a.heading-anchor {
+  color: var(--color-primary-main);
+}
+
+html.dark blockquote {
+  border-left-color: var(--color-primary-light);
+}
+
+/* 인라인 코드 스타일 */
+code {
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
 }

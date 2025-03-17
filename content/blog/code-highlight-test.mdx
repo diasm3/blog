@@ -1,0 +1,192 @@
+---
+title: "코드 하이라이팅 테스트"
+date: "2025-03-03"
+tags: ["syntax", "code", "mdx"]
+excerpt: "rehype-pretty-code를 사용한 코드 하이라이팅 테스트"
+---
+
+# 코드 하이라이팅 테스트
+
+이 페이지는 `rehype-pretty-code`를 사용한 코드 하이라이팅 기능을 테스트합니다.
+
+## JavaScript 예제
+
+```js
+// 기본 함수
+function greet(name) {
+  console.log(`Hello, ${name}!`)
+  return `Hello, ${name}!`
+}
+
+// 화살표 함수
+const multiply = (a, b) => a * b
+
+// 클래스 예제
+class Person {
+  constructor(name, age) {
+    this.name = name
+    this.age = age
+  }
+
+  sayHello() {
+    console.log(
+      `Hello, my name is ${this.name} and I am ${this.age} years old.`
+    )
+  }
+}
+```
+
+## TypeScript 예제
+
+```ts
+// TypeScript 인터페이스
+interface User {
+  id: number
+  name: string
+  email: string
+  isActive: boolean
+}
+
+// 타입 확장
+type AdminUser = User & {
+  permissions: string[]
+  role: "admin" | "superadmin"
+}
+
+// 제네릭 함수
+function createUser<T extends User>(user: T): T {
+  return user
+}
+
+// 비동기 함수
+const getUser = async (id: number): Promise<User | null> => {
+  try {
+    // API에서 사용자 정보 가져오기
+    return { id, name: "John", email: "john@example.com", isActive: true }
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+```
+
+## Python 예제
+
+```python
+# Python 클래스 예제
+import os
+from typing import List, Dict, Optional
+
+class Animal:
+    def __init__(self, name: str, age: int):
+        self.name = name
+        self.age = age
+
+    def make_sound(self) -> str:
+        pass
+
+class Dog(Animal):
+    def make_sound(self) -> str:
+        return "Woof!"
+
+    def fetch(self, item: str) -> str:
+        return f"{self.name} is fetching the {item}!"
+
+# 리스트 컴프리헨션
+numbers = [1, 2, 3, 4, 5]
+squared = [n**2 for n in numbers if n % 2 == 0]
+```
+
+## 줄 강조 예제
+
+```js {3-4}
+// 3-4번 줄이 강조됩니다
+function example() {
+  const highlightedLine1 = "이 줄은 강조됩니다"
+  const highlightedLine2 = "이 줄도 강조됩니다"
+  const normalLine = "이 줄은 강조되지 않습니다"
+}
+```
+
+## 단어 강조 예제
+
+```js /강조/
+// "강조"라는 단어가 강조됩니다
+const text = "이 텍스트에서 강조 단어가 하이라이트됩니다"
+console.log("강조 단어가 여러 번 나와도 모두 강조됩니다")
+```
+
+## HTML 예제
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML 예제</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>HTML 코드 하이라이팅</h1>
+      <nav>
+        <ul>
+          <li><a href="#home">홈</a></li>
+          <li><a href="#about">소개</a></li>
+          <li><a href="#contact">연락처</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <section id="content">
+        <p>이것은 <strong>HTML</strong> 코드 예제입니다.</p>
+      </section>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
+```
+
+## CSS 예제
+
+```css
+/* 기본 스타일 */
+body {
+  font-family: "Noto Sans KR", sans-serif;
+  line-height: 1.6;
+  color: #333;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* 헤더 스타일 */
+header {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  header {
+    padding: 0.5rem;
+  }
+
+  nav ul {
+    flex-direction: column;
+  }
+}
+
+/* 애니메이션 */
+.button {
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+```

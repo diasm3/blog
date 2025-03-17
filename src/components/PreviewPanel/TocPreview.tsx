@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import styled from "styled-components"
 
 interface TocItem {
@@ -11,7 +11,6 @@ interface TocItem {
 export const TableOfContents: React.FC<{ content: string }> = ({ content }) => {
   const [activeId, setActiveId] = useState<string>("")
   const [scrollProgress, setScrollProgress] = useState(0)
-  const headingRefs = useRef<{ [key: string]: HTMLElement }>({})
 
   // 헤딩 추출 및 TOC 아이템 생성
   const tocItems = useMemo(() => {
@@ -19,7 +18,7 @@ export const TableOfContents: React.FC<{ content: string }> = ({ content }) => {
     const items: TocItem[] = []
     const headingRegex = /^(#{1,6})\s+(.+)$/
 
-    lines.forEach((line, index) => {
+    lines.forEach((line) => {
       const match = line.match(headingRegex)
       if (match) {
         const level = match[1].length
@@ -37,18 +36,30 @@ export const TableOfContents: React.FC<{ content: string }> = ({ content }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // 전체 스크롤 진행률 계산
-      const scrolled = window.scrollY
-      const height = document.documentElement.scrollHeight - window.innerHeight
+      // 현재 스크롤 위치 계산
+      const mainContent = document.querySelector("main")
+      if (!mainContent) return
+
+      // 메인 컨텐츠 내의 스크롤 위치 계산
+      const scrolled = mainContent.scrollTop
+      const height = mainContent.scrollHeight - mainContent.clientHeight
       const progress = (scrolled / height) * 100
       setScrollProgress(progress)
+
+      // 현재 화면에 보이는 헤딩 찾기
+      const headings = Array.from(
+        mainContent.querySelectorAll("h1, h2, h3, h4, h5, h6")
+      )
 
       let closest = ""
       let closestDistance = Infinity
 
-      Object.entries(headingRefs.current).forEach(([id, element]) => {
-        const rect = element.getBoundingClientRect()
-        const distance = Math.abs(rect.top)
+      headings.forEach((heading) => {
+        const id = heading.id
+        if (!id) return
+
+        const rect = heading.getBoundingClientRect()
+        const distance = Math.abs(rect.top - 80) // 헤더 높이 고려
 
         if (distance < closestDistance) {
           closest = id
@@ -59,16 +70,28 @@ export const TableOfContents: React.FC<{ content: string }> = ({ content }) => {
       setActiveId(closest)
     }
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    // 메인 컨텐츠 요소에 스크롤 이벤트 리스너 추가
+    const mainContent = document.querySelector("main")
+    if (mainContent) {
+      mainContent.addEventListener("scroll", handleScroll)
+      handleScroll() // 초기 로드 시 실행
+
+      return () => {
+        mainContent.removeEventListener("scroll", handleScroll)
+      }
+    }
   }, [])
 
   const scrollToHeading = (id: string) => {
-    const element = headingRefs.current[id]
-    if (element) {
-      const offset = element.offsetTop - 80 // 헤더 높이 등을 고려한 오프셋
-      window.scrollTo({
-        top: offset,
+    const element = document.getElementById(id)
+    const mainContent = document.querySelector("main")
+
+    if (element && mainContent) {
+      // 메인 컨텐츠 내에서의 요소 위치 계산
+      const offsetTop = element.offsetTop - 80 // 헤더 높이 고려
+
+      mainContent.scrollTo({
+        top: offsetTop,
         behavior: "smooth",
       })
     }
@@ -100,9 +123,9 @@ export const TableOfContents: React.FC<{ content: string }> = ({ content }) => {
 }
 
 export const EmptyToc = styled.div`
-  color: ${(props) => props.theme.colors.text.secondary};
+  color: var(--color-text-secondary);
   font-style: italic;
-  padding: ${(props) => props.theme.spacing(4)};
+  padding: 1rem;
   text-align: center;
 `
 
@@ -114,6 +137,8 @@ export const TocWrapper = styled.div`
   margin-top: 16px;
   padding: 16px;
   gap: 8px;
+  background-color: var(--color-background-paper);
+  border-radius: var(--border-radius-medium);
 `
 
 export const TocLink = styled.a<{
@@ -121,22 +146,24 @@ export const TocLink = styled.a<{
   $isActive?: boolean
 }>`
   padding: 6px 8px;
-  padding-left: ${(props) => props.$level * 16}px;
-  font-size: ${(props) => 16 - (props.$level - 1)}px;
+  padding-left: ${(props) => props.$level * 12}px;
+  font-size: ${(props) => 15 - (props.$level - 1)}px;
   color: ${(props) =>
     props.$isActive
-      ? props.theme.colors.primary.main
-      : props.theme.colors.text.primary};
+      ? "var(--color-primary-main)"
+      : "var(--color-text-primary)"};
   text-decoration: none;
   border-left: 2px solid
     ${(props) =>
-      props.$isActive ? props.theme.colors.primary.main : "transparent"};
+      props.$isActive ? "var(--color-primary-main)" : "transparent"};
   transition: all 0.2s ease;
   opacity: ${(props) => 1 - (props.$level - 1) * 0.1};
+  overflow-wrap: break-word;
+  word-break: break-word;
 
   &:hover {
-    background: ${(props) => props.theme.colors.background.default};
-    color: ${(props) => props.theme.colors.primary.main};
+    background: var(--color-background-default);
+    color: var(--color-primary-main);
   }
 `
 
@@ -147,6 +174,6 @@ export const VerticalScrollIndicator = styled.div<{ $progress: number }>`
   top: 0;
   width: 2px;
   height: ${(props) => props.$progress}%;
-  background: ${(props) => props.theme.colors.primary.main};
+  background: var(--color-primary-main);
   transition: height 0.1s ease;
 `

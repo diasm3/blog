@@ -28,13 +28,13 @@ const ExplorerContainer = styled.div<{ $isOpen: boolean }>`
   left: 0;
   height: 100%;
   width: 16rem;
-  background-color: ${(props) => props.theme.colors.background.paper};
-  border-right: 1px solid ${(props) => props.theme.colors.divider};
-  z-index: ${(props) => props.theme.zIndex.drawer};
+  background-color: var(--color-background-paper);
+  border-right: 1px solid var(--color-divider);
+  z-index: 2000; /* Fixed z-index value */
   transition: transform 0.3s ease-in-out;
   transform: translateX(${(props) => (props.$isOpen ? "0" : "-100%")});
 
-  @media (min-width: ${(props) => props.theme.breakpoints.lg}) {
+  @media (min-width: 1024px) {
     position: static;
     transform: none;
   }
@@ -45,26 +45,26 @@ const ExplorerHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  border-bottom: 1px solid ${(props) => props.theme.colors.divider};
+  border-bottom: 1px solid var(--color-divider);
 `
 
 const ExplorerTitle = styled.h3`
-  font-weight: ${(props) => props.theme.typography.fontWeight.semibold};
-  font-size: ${(props) => props.theme.typography.fontSize.lg};
+  font-weight: 600; /* semibold */
+  font-size: 1.125rem; /* lg */
   margin: 0;
 `
 
 const CloseButton = styled.button`
   background: none;
   border: none;
-  color: ${(props) => props.theme.colors.text.secondary};
+  color: var(--color-text-secondary);
   cursor: pointer;
 
   &:hover {
-    color: ${(props) => props.theme.colors.text.primary};
+    color: var(--color-text-primary);
   }
 
-  @media (min-width: ${(props) => props.theme.breakpoints.lg}) {
+  @media (min-width: 1024px) {
     display: none;
   }
 `
@@ -84,10 +84,10 @@ const FolderHeader = styled.div`
   align-items: center;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
-  border-radius: ${(props) => props.theme.borderRadius.small};
+  border-radius: var(--border-radius-small);
 
   &:hover {
-    background-color: ${(props) => `${props.theme.colors.background.light}`};
+    background-color: var(--color-background-light);
   }
 `
 
@@ -99,18 +99,20 @@ const FileLink = styled(Link)<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   padding: 0.25rem 0.5rem;
-  border-radius: ${(props) => props.theme.borderRadius.small};
+  border-radius: var(--border-radius-small);
   color: ${(props) =>
     props.$isActive
-      ? props.theme.colors.primary.main
-      : props.theme.colors.text.primary};
+      ? "var(--color-primary-main)"
+      : "var(--color-text-primary)"};
   background-color: ${(props) =>
-    props.$isActive ? `${props.theme.colors.primary.main}10` : "transparent"};
+    props.$isActive
+      ? "rgba(var(--color-primary-main-rgb), 0.1)"
+      : "transparent"};
   text-decoration: none;
 
   &:hover {
     background-color: ${(props) =>
-      !props.$isActive && `${props.theme.colors.background.light}`};
+      !props.$isActive && "var(--color-background-light)"};
     text-decoration: none;
   }
 `
@@ -120,28 +122,26 @@ const IconSpan = styled.span`
 `
 
 const FolderName = styled.span<{ $isFolder?: boolean }>`
-  font-weight: ${(props) =>
-    props.$isFolder
-      ? props.theme.typography.fontWeight.medium
-      : props.theme.typography.fontWeight.normal};
+  font-weight: ${(props) => (props.$isFolder ? "500" : "400")};
 `
 
 const MobileMenuButton = styled.button`
   position: fixed;
   top: 1rem;
   left: 1rem;
-  z-index: ${(props) => props.theme.zIndex.fab};
-  background-color: ${(props) => props.theme.colors.background.paper};
-  color: ${(props) => props.theme.colors.text.primary};
+  z-index: 1100; /* Fixed z-index value */
+  background-color: var(--color-background-paper);
+  color: var(--color-text-primary);
   padding: 0.5rem;
-  border-radius: ${(props) => props.theme.borderRadius.medium};
-  border: 1px solid ${(props) => props.theme.colors.divider};
-  box-shadow: ${(props) => props.theme.shadows.md};
+  border-radius: var(--border-radius-medium);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
   cursor: pointer;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 
-  @media (min-width: ${(props) => props.theme.breakpoints.lg}) {
+  @media (min-width: 1024px) {
     display: none;
   }
 `
@@ -185,6 +185,7 @@ const FolderExplorer: React.FC<FolderExplorerProps> = ({
         </FolderItemContainer>
       )
     } else {
+      console.log(item)
       return (
         <FolderItemContainer key={item.id} $depth={depth}>
           <FileLink href={item.path} $isActive={isActive}>
@@ -214,7 +215,8 @@ const FolderExplorer: React.FC<FolderExplorerProps> = ({
 const ClientFolderExplorer: React.FC<{ folderStructure: FolderItem[] }> = ({
   folderStructure,
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
+  // 데스크톱에서는 기본적으로 열려있고, 모바일에서는 닫혀있도록 설정
+  const [isOpen, setIsOpen] = useState(true)
 
   return (
     <>

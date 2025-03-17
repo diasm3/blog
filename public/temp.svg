@@ -1,0 +1,289 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1600">
+  <!-- 배경 -->
+  <rect width="800" height="1600" fill="#f5f5f5"/>
+  
+  <!-- 제목 -->
+  <text x="400" y="40" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#333">Docker Swarm에서의 Raft 합의 알고리즘</text>
+  
+  <!-- 섹션 1: 리더 선출 -->
+  <rect x="50" y="70" width="700" height="450" rx="10" fill="#e6f7ff" stroke="#1890ff" stroke-width="2"/>
+  <text x="90" y="100" font-family="Arial" font-size="20" font-weight="bold" text-anchor="start" fill="#1890ff">1. 리더 선출 (Leader Election)</text>
+  
+  <!-- 단계 구분선 -->
+  <line x1="50" y1="120" x2="750" y2="120" stroke="#1890ff" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="50" y1="240" x2="750" y2="240" stroke="#1890ff" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="50" y1="360" x2="750" y2="360" stroke="#1890ff" stroke-width="1" stroke-dasharray="5,5"/>
+  
+  <!-- 단계 번호 -->
+  <circle cx="70" cy="150" r="15" fill="#1890ff"/>
+  <text x="70" y="155" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">1</text>
+  
+  <circle cx="70" cy="270" r="15" fill="#1890ff"/>
+  <text x="70" y="275" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">2</text>
+  
+  <circle cx="70" cy="390" r="15" fill="#1890ff"/>
+  <text x="70" y="395" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">3</text>
+  
+  <!-- 초기 상태: 모든 노드가 팔로워 -->
+  <g>
+    <text x="400" y="150" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">초기 상태: 모든 노드가 팔로워(Follower)</text>
+    
+    <rect x="150" y="170" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="210" y="205" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 1</text>
+    <text x="210" y="225" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    
+    <rect x="340" y="170" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="400" y="205" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 2</text>
+    <text x="400" y="225" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    
+    <rect x="530" y="170" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="590" y="205" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 3</text>
+    <text x="590" y="225" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+  </g>
+  
+  <!-- 선거 시작: Manager 2가 후보자가 됨 -->
+  <g>
+    <text x="400" y="270" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">선거 시작: 선거 타임아웃 후 Manager 2가 후보자(Candidate)가 됨</text>
+    
+    <rect x="150" y="290" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="210" y="325" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 1</text>
+    <text x="210" y="345" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    
+    <rect x="340" y="290" width="120" height="60" rx="10" fill="#FFFBE6" stroke="#FA8C16" stroke-width="2"/>
+    <text x="400" y="325" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 2</text>
+    <text x="400" y="345" font-family="Arial" font-size="12" text-anchor="middle" fill="#FA8C16">Candidate</text>
+    
+    <rect x="530" y="290" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="590" y="325" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 3</text>
+    <text x="590" y="345" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    
+    <!-- 투표 요청 화살표 -->
+    <line x1="350" y1="300" x2="230" y2="300" stroke="#FA8C16" stroke-width="2" stroke-dasharray="5,5"/>
+    <polygon points="240,295 230,300 240,305" fill="#FA8C16"/>
+    <text x="290" y="295" font-family="Arial" font-size="10" text-anchor="middle" fill="#FA8C16">RequestVote</text>
+    
+    <line x1="450" y1="300" x2="570" y2="300" stroke="#FA8C16" stroke-width="2" stroke-dasharray="5,5"/>
+    <polygon points="560,295 570,300 560,305" fill="#FA8C16"/>
+    <text x="510" y="295" font-family="Arial" font-size="10" text-anchor="middle" fill="#FA8C16">RequestVote</text>
+  </g>
+  
+  <!-- 리더 선출 완료 -->
+  <g>
+    <text x="400" y="390" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">과반수 투표 획득: Manager 2가 리더(Leader)가 됨</text>
+    
+    <rect x="150" y="410" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="210" y="445" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 1</text>
+    <text x="210" y="465" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    
+    <rect x="340" y="410" width="120" height="60" rx="10" fill="#F6FFED" stroke="#52C41A" stroke-width="2"/>
+    <text x="400" y="445" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 2</text>
+    <text x="400" y="465" font-family="Arial" font-size="12" text-anchor="middle" fill="#52C41A">Leader</text>
+    
+    <rect x="530" y="410" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="590" y="445" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 3</text>
+    <text x="590" y="465" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    
+    <!-- 하트비트 화살표 -->
+    <line x1="350" y1="430" x2="230" y2="430" stroke="#52C41A" stroke-width="2"/>
+    <polygon points="240,425 230,430 240,435" fill="#52C41A"/>
+    <text x="290" y="425" font-family="Arial" font-size="10" text-anchor="middle" fill="#52C41A">AppendEntries (하트비트)</text>
+    
+    <line x1="450" y1="430" x2="570" y2="430" stroke="#52C41A" stroke-width="2"/>
+    <polygon points="560,425 570,430 560,435" fill="#52C41A"/>
+    <text x="510" y="425" font-family="Arial" font-size="10" text-anchor="middle" fill="#52C41A">AppendEntries (하트비트)</text>
+  </g>
+  
+  <!-- 섹션 2: 로그 복제 -->
+  <rect x="50" y="540" width="700" height="450" rx="10" fill="#f9f0ff" stroke="#722ed1" stroke-width="2"/>
+  <text x="90" y="570" font-family="Arial" font-size="20" font-weight="bold" text-anchor="start" fill="#722ed1">2. 로그 복제 (Log Replication)</text>
+  
+  <!-- 단계 구분선 -->
+  <line x1="50" y1="590" x2="750" y2="590" stroke="#722ed1" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="50" y1="710" x2="750" y2="710" stroke="#722ed1" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="50" y1="860" x2="750" y2="860" stroke="#722ed1" stroke-width="1" stroke-dasharray="5,5"/>
+  
+  <!-- 단계 번호 -->
+  <circle cx="70" cy="630" r="15" fill="#722ed1"/>
+  <text x="70" y="635" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">1</text>
+  
+  <circle cx="70" cy="770" r="15" fill="#722ed1"/>
+  <text x="70" y="775" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">2</text>
+  
+  <circle cx="70" cy="900" r="15" fill="#722ed1"/>
+  <text x="70" y="905" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">3</text>
+  
+  <!-- 로그 복제 시작 - 클라이언트 요청 -->
+  <g>
+    <text x="400" y="620" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">클라이언트 요청: 새 서비스 생성 (docker service create)</text>
+    
+    <rect x="100" y="640" width="100" height="50" rx="25" fill="#fff" stroke="#333" stroke-width="1"/>
+    <text x="150" y="670" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">클라이언트</text>
+    
+    <line x1="180" y1="665" x2="330" y2="680" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+    <polygon points="320,675 330,680 320,685" fill="#333"/>
+    <text x="260" y="660" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">서비스 생성 요청</text>
+    
+    <rect x="340" y="660" width="120" height="60" rx="10" fill="#F6FFED" stroke="#52C41A" stroke-width="2"/>
+    <text x="400" y="690" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 2</text>
+    <text x="400" y="710" font-family="Arial" font-size="12" text-anchor="middle" fill="#52C41A">Leader</text>
+  </g>
+  
+  <!-- 로그 항목 추가 -->
+  <g>
+    <text x="400" y="740" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">리더가 로그 항목 추가 후 팔로워에게 복제</text>
+    
+    <!-- 로그 표현 -->
+    <rect x="280" y="760" width="240" height="30" rx="5" fill="#fff" stroke="#52C41A" stroke-width="2"/>
+    <line x1="340" y1="760" x2="340" y2="790" stroke="#52C41A" stroke-width="1"/>
+    <line x1="400" y1="760" x2="400" y2="790" stroke="#52C41A" stroke-width="1"/>
+    <line x1="460" y1="760" x2="460" y2="790" stroke="#52C41A" stroke-width="1"/>
+    <text x="310" y="780" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Term 1</text>
+    <text x="370" y="780" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Term 1</text>
+    <text x="430" y="780" font-family="Arial" font-size="12" text-anchor="middle" fill="#722ed1">Term 2</text>
+    <text x="490" y="780" font-family="Arial" font-size="12" text-anchor="middle" fill="#f5222d">새 서비스</text>
+    
+    <!-- 복제 화살표 -->
+    <line x1="350" y1="810" x2="230" y2="840" stroke="#52C41A" stroke-width="2"/>
+    <polygon points="240,835 230,840 242,845" fill="#52C41A"/>
+    <text x="290" y="815" font-family="Arial" font-size="10" text-anchor="middle" fill="#52C41A">AppendEntries</text>
+    
+    <line x1="450" y1="810" x2="570" y2="840" stroke="#52C41A" stroke-width="2"/>
+    <polygon points="560,835 570,840 562,845" fill="#52C41A"/>
+    <text x="510" y="815" font-family="Arial" font-size="10" text-anchor="middle" fill="#52C41A">AppendEntries</text>
+  </g>
+  
+  <!-- 팔로워 로그 복제 -->
+  <g>
+    <text x="400" y="880" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">과반수 복제 완료 후 커밋 및 응답</text>
+    
+    <!-- 노드들 -->
+    <rect x="150" y="900" width="120" height="65" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="210" y="925" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 1</text>
+    <text x="210" y="945" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    <rect x="170" y="950" width="80" height="10" rx="2" fill="#f5222d" stroke="#d9d9d9" stroke-width="1"/>
+    <text x="210" y="958" font-family="Arial" font-size="8" text-anchor="middle" fill="white">로그 항목 복제됨</text>
+    
+    <rect x="340" y="900" width="120" height="65" rx="10" fill="#F6FFED" stroke="#52C41A" stroke-width="2"/>
+    <text x="400" y="925" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 2</text>
+    <text x="400" y="945" font-family="Arial" font-size="12" text-anchor="middle" fill="#52C41A">Leader</text>
+    <rect x="360" y="950" width="80" height="10" rx="2" fill="#f5222d" stroke="#d9d9d9" stroke-width="1"/>
+    <text x="400" y="958" font-family="Arial" font-size="8" text-anchor="middle" fill="white">로그 항목 커밋됨</text>
+    
+    <rect x="530" y="900" width="120" height="65" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="590" y="925" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 3</text>
+    <text x="590" y="945" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    <rect x="550" y="950" width="80" height="10" rx="2" fill="#f5222d" stroke="#d9d9d9" stroke-width="1"/>
+    <text x="590" y="958" font-family="Arial" font-size="8" text-anchor="middle" fill="white">로그 항목 복제됨</text>
+    
+    <!-- 클라이언트 응답 -->
+    <line x1="340" y1="930" x2="210" y2="930" stroke="#52C41A" stroke-width="1" stroke-dasharray="5,5"/>
+    <polygon points="220,925 210,930 220,935" fill="#52C41A"/>
+    <text x="280" y="925" font-family="Arial" font-size="10" text-anchor="middle" fill="#52C41A">서비스 생성 완료</text>
+  </g>
+  
+  <!-- 섹션 3: 안전성 유지 -->
+  <rect x="50" y="1010" width="700" height="540" rx="10" fill="#fff1f0" stroke="#f5222d" stroke-width="2"/>
+  <text x="90" y="1040" font-family="Arial" font-size="20" font-weight="bold" text-anchor="start" fill="#f5222d">3. 안전성 유지 (Safety Guarantees)</text>
+  
+  <!-- 단계 구분선 -->
+  <line x1="50" y1="1060" x2="750" y2="1060" stroke="#f5222d" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="50" y1="1170" x2="750" y2="1170" stroke="#f5222d" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="50" y1="1280" x2="750" y2="1280" stroke="#f5222d" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="50" y1="1410" x2="750" y2="1410" stroke="#f5222d" stroke-width="1" stroke-dasharray="5,5"/>
+  
+  <!-- 단계 번호 -->
+  <circle cx="70" cy="1090" r="15" fill="#f5222d"/>
+  <text x="70" y="1095" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">1</text>
+  
+  <circle cx="70" cy="1200" r="15" fill="#f5222d"/>
+  <text x="70" y="1205" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">2</text>
+  
+  <circle cx="70" cy="1320" r="15" fill="#f5222d"/>
+  <text x="70" y="1325" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">3</text>
+  
+  <circle cx="70" cy="1440" r="15" fill="#f5222d"/>
+  <text x="70" y="1445" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">4</text>
+  
+  <!-- 리더 실패 -->
+  <g>
+    <text x="400" y="1090" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">리더(Manager 2) 실패</text>
+    
+    <rect x="150" y="1110" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="210" y="1145" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 1</text>
+    <text x="210" y="1165" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    
+    <rect x="340" y="1110" width="120" height="60" rx="10" fill="#fff" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,5"/>
+    <line x1="340" y1="1110" x2="460" y2="1170" stroke="#f5222d" stroke-width="2"/>
+    <line x1="340" y1="1170" x2="460" y2="1110" stroke="#f5222d" stroke-width="2"/>
+    <text x="400" y="1145" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 2</text>
+    <text x="400" y="1165" font-family="Arial" font-size="12" text-anchor="middle" fill="#f5222d">실패</text>
+    
+    <rect x="530" y="1110" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="590" y="1145" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 3</text>
+    <text x="590" y="1165" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+  </g>
+  
+  <!-- 새 리더 선출 - 안전성 검사 -->
+  <g>
+    <text x="400" y="1200" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">Manager 1이 후보자가 되어 투표 요청 (로그 정보 포함)</text>
+    
+    <rect x="150" y="1220" width="120" height="60" rx="10" fill="#FFFBE6" stroke="#FA8C16" stroke-width="2"/>
+    <text x="210" y="1255" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 1</text>
+    <text x="210" y="1275" font-family="Arial" font-size="12" text-anchor="middle" fill="#FA8C16">Candidate</text>
+    
+    <rect x="530" y="1220" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="590" y="1255" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 3</text>
+    <text x="590" y="1275" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    
+    <!-- 투표 요청 화살표 - 로그 정보 포함 -->
+    <line x1="270" y1="1250" x2="530" y2="1250" stroke="#FA8C16" stroke-width="2" stroke-dasharray="5,5"/>
+    <polygon points="520,1245 530,1250 520,1255" fill="#FA8C16"/>
+    <text x="400" y="1240" font-family="Arial" font-size="10" text-anchor="middle" fill="#FA8C16">RequestVote (lastLogIndex=4, lastLogTerm=2)</text>
+  </g>
+  
+  <!-- 로그 검사를 통한 리더 제한 -->
+  <g>
+    <text x="400" y="1310" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">Manager 3는 로그 길이와 텀을 확인 후 투표 승인</text>
+    
+    <!-- 각 노드의 로그 상태 -->
+    <rect x="120" y="1330" width="180" height="80" rx="5" fill="#fff" stroke="#333" stroke-width="1"/>
+    <text x="210" y="1350" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Manager 1 로그</text>
+    <line x1="120" y1="1360" x2="300" y2="1360" stroke="#333" stroke-width="1"/>
+    <text x="150" y="1380" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Index: 1-4</text>
+    <text x="150" y="1400" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">LastTerm: 2</text>
+    <text x="250" y="1390" font-family="Arial" font-size="10" text-anchor="middle" fill="#f5222d">✓ 새 서비스 항목 있음</text>
+    
+    <rect x="500" y="1330" width="180" height="80" rx="5" fill="#fff" stroke="#333" stroke-width="1"/>
+    <text x="590" y="1350" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Manager 3 로그</text>
+    <line x1="500" y1="1360" x2="680" y2="1360" stroke="#333" stroke-width="1"/>
+    <text x="530" y="1380" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Index: 1-4</text>
+    <text x="530" y="1400" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">LastTerm: 2</text>
+    <text x="630" y="1390" font-family="Arial" font-size="10" text-anchor="middle" fill="#f5222d">✓ 새 서비스 항목 있음</text>
+    
+    <!-- 투표 응답 -->
+    <line x1="530" y1="1290" x2="270" y2="1290" stroke="#52C41A" stroke-width="1.5" stroke-dasharray="5,5"/>
+    <polygon points="280,1285 270,1290 280,1295" fill="#52C41A"/>
+    <text x="400" y="1285" font-family="Arial" font-size="10" text-anchor="middle" fill="#52C41A">투표 승인 (로그가 최신 상태임)</text>
+  </g>
+  
+  <!-- 새 리더 선출 완료 -->
+  <g>
+    <text x="400" y="1440" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">Manager 1이 리더가 되어 일관성 있는 상태 유지</text>
+    
+    <rect x="150" y="1460" width="120" height="60" rx="10" fill="#F6FFED" stroke="#52C41A" stroke-width="2"/>
+    <text x="210" y="1495" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 1</text>
+    <text x="210" y="1515" font-family="Arial" font-size="12" text-anchor="middle" fill="#52C41A">New Leader</text>
+    
+    <rect x="530" y="1460" width="120" height="60" rx="10" fill="#fff" stroke="#d9d9d9" stroke-width="2"/>
+    <text x="590" y="1495" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Manager 3</text>
+    <text x="590" y="1515" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Follower</text>
+    
+    <line x1="270" y1="1490" x2="530" y2="1490" stroke="#52C41A" stroke-width="2"/>
+    <polygon points="520,1485 530,1490 520,1495" fill="#52C41A"/>
+    <text x="400" y="1480" font-family="Arial" font-size="10" text-anchor="middle" fill="#52C41A">AppendEntries (하트비트)</text>
+  </g>
+  
+  <!-- 요약 -->
+  <rect x="100" y="1570" width="600" height="100" rx="10" fill="#e6f7ff" stroke="#1890ff" stroke-width="2"/>
+  <text x="400" y="1590" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#1890ff">Raft 합의 알고리즘 핵심 안전성:</text>
+  <line x1="140" y1="1610" x2
